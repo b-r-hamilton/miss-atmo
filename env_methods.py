@@ -6,8 +6,6 @@ Data from https://www.esrl.noaa.gov/psd/data/gridded/data.20thC_ReanV2c.pressure
 """
 import os 
 from netCDF4 import Dataset
-import cartopy 
-import cartopy.crs as ccrs 
 import datetime as dt 
 import numpy as np 
 
@@ -21,31 +19,38 @@ def find_closest_val(val, arr):
     return index    
     
 #convert from "hours since 1800-1-1" to a datetime object 
-def convert_datetime(val):
+def convert_datetime(val, tus):
     origin = dt.datetime(1800, 1, 1, 0, 0, 0)
-    new = origin + dt.timedelta(hours = val)
+    if tus[0] == 'h': new = origin + dt.timedelta(hours = val)
+    if tus[0] == 'd': new = origin + dt.timedelta(days = val)
     return new 
 
 #acquire data between start and end data, return as dict 
 def get_data(directory, all_data, time_b):
   
     files = os.listdir(directory)
-    
-    c_var_names = ['level', 'lat', 'lon', 'time', 'time_bnds']
-    
+        
     nc_vars = dict()
     
     x = Dataset(os.path.join(directory, files[0]), 'r', format = 'NETCDF4')
     
-    lev = list(x['level'][:].data)
-    lat = x['lat'][:].data
-    lon = x['lon'][:].data
-    time = x['time'][:].data
-    pres_levels = [1000, 850, 500]
-    pres_levels_i = [lev.index(i) for i in pres_levels]
+    c_var_names = list(x.dimensions.keys())
+    c_var_names.remove('nbnds')
+    
+    data_package = dict()
+    
+    for cv in c_var_names:
+
+        data_package[cv] = x[cv][:].data.tolist()
+    
+    if 'level' in c_var_names: 
+        pres_levels = [1000, 850, 500]
+        pres_levels_i = [data_package['level'].index(i) for i in pres_levels]
+        data_package['level'] = pres_levels
     
     #sort out the time situation 
-    origin = dt.datetime(1800, 1, 1, 0, 0, 0)
+
+    time = [convert_datetime(i, x['time'].units) for i in data_package['time']]
     
     if not all_data: 
         month_start = time_b[0]
@@ -53,31 +58,31 @@ def get_data(directory, all_data, time_b):
         month_end = time_b[2]
         year_end = time_b[3]
         
-        time_start = (dt.datetime(year = year_start, month = month_start, day = 1) - origin).total_seconds() / 3600
+        time_start = find_closest_val(dt.datetime(year = year_start, month = month_start, day = 1), time)
+        time_end = find_closest_val(dt.datetime(year = year_end, month = month_end, day = 1), time) 
 
-        time_end = (dt.datetime(year = year_end, month = month_end, day = 1) - origin).total_seconds() / 3600
-        time_start_i = find_closest_val(time_start, time)
-        time_end_i = find_closest_val(time_end, time)
-        
     else:
-        time_start_i = 0 
-        time_end_i = len(time)
+        time_start = 0 
+        time_end = len(time)
         
-    time = time[time_start_i:time_end_i]
-    time = [convert_datetime(i) for i in time]
-
+    time = time[time_start:time_end]
+    
+    data_package['time'] = time
+    
+    
     for i in files[:]:
         path = os.path.join(directory, i)
         x = Dataset(path, 'r', format = 'NETCDF4')
-        var_name = [i for i in list(x.variables.keys()) if i not in c_var_names][0]
-        var = x[var_name][time_start_i:time_end_i, pres_levels_i, :, :].data
+        print('acquring data from ' +i)
+        var_names = list(x.variables.keys())
+        var_names.remove('time_bnds')
+        var_name = [i for i in var_names if i not in c_var_names][0]
+        if 'level' in c_var_names: var = x[var_name][time_start:time_end, pres_levels_i, :, :].data
+        else: var = x[var_name][time_start:time_end, :, :].data
         nc_vars[var_name] = var
-    
-    data_package = {'pres_levels':pres_levels,
-                    'time':time,
-                    'lat':lat,
-                    'lon':lon,
-                    'nc_vars': nc_vars}
+        
+    data_package['nc_vars'] = nc_vars
+
     return data_package
 
 def normalize_data(var, time):

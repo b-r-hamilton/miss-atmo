@@ -45,32 +45,30 @@ def get_data(directory, all_data, time_b):
     pres_levels_i = [lev.index(i) for i in pres_levels]
     
     #sort out the time situation 
-    origin = dt.datetime(1800, 1, 1, 0, 0, 0)
-    
+    time = [convert_datetime(i) for i in time]
+
     if not all_data: 
         month_start = time_b[0]
         year_start = time_b[1]
         month_end = time_b[2]
         year_end = time_b[3]
         
-        time_start = (dt.datetime(year = year_start, month = month_start, day = 1) - origin).total_seconds() / 3600
+        time_start = find_closest_val(dt.datetime(year = year_start, month = month_start, day = 1), time)
 
-        time_end = (dt.datetime(year = year_end, month = month_end, day = 1) - origin).total_seconds() / 3600
-        time_start_i = find_closest_val(time_start, time)
-        time_end_i = find_closest_val(time_end, time)
+        time_end = find_closest_val(dt.datetime(year = year_end, month = month_end, day = 1), time) 
+
         
     else:
-        time_start_i = 0 
-        time_end_i = len(time)
+        time_start = 0 
+        time_end = len(time)
         
-    time = time[time_start_i:time_end_i]
-    time = [convert_datetime(i) for i in time]
+    time = time[time_start:time_end]
 
     for i in files[:]:
         path = os.path.join(directory, i)
         x = Dataset(path, 'r', format = 'NETCDF4')
         var_name = [i for i in list(x.variables.keys()) if i not in c_var_names][0]
-        var = x[var_name][time_start_i:time_end_i, pres_levels_i, :, :].data
+        var = x[var_name][time_start:time_end, pres_levels_i, :, :].data
         nc_vars[var_name] = var
     
     data_package = {'pres_levels':pres_levels,
