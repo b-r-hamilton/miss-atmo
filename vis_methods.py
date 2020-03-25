@@ -36,8 +36,9 @@ def height_anomaly_plot(lat_start, lat_end, lon_start, lon_end,lat, lon, pres_le
     ax.add_feature(cartopy.feature.BORDERS, linestyle=':')
     ax.add_feature(cartopy.feature.LAKES, alpha=0.5)
     ax.add_feature(cartopy.feature.RIVERS)
-
-def average_plot(lat_start, lat_end, lon_start, lon_end,lat, lon, pres_levels, lev_x, data_package, title_str):
+    
+    return fig 
+def average_plot(lat_start, lat_end, lon_start, lon_end, lat, lon, pres_levels, lev_x, data_package, title_str):
    
     lat1 = em.find_closest_val(lat_start, lat)
     lat2 = em.find_closest_val(lat_end, lat)
@@ -51,8 +52,8 @@ def average_plot(lat_start, lat_end, lon_start, lon_end,lat, lon, pres_levels, l
 
     ax.coastlines()
 
-    ax.set_xticks(np.asarray(lon[::4]) - 180)
-    ax.set_yticks(np.asarray(lat[::3]))
+    ax.set_xticks(np.asarray(lon[::5]) - 180)
+    ax.set_yticks(np.asarray(lat[::4]))
     ax.set_xlabel('lon')
     ax.set_ylabel('lat')
     mesh = plt.pcolormesh(lon[lon1:lon2], lat[lat1:lat2], data_package['hgt'][lev_x, lat1:lat2, lon1:lon2],
@@ -72,8 +73,10 @@ def average_plot(lat_start, lat_end, lon_start, lon_end,lat, lon, pres_levels, l
     ax.add_feature(cartopy.feature.BORDERS, linestyle=':')
     ax.add_feature(cartopy.feature.LAKES, alpha=0.5)
     ax.add_feature(cartopy.feature.RIVERS)
+    
+    return fig
 
-def sst_anomaly_plot(lat_start, lat_end, lon_start, lon_end,lat, lon, data_package, title_str):
+def sst_anomaly_plot(lat_start, lat_end, lon_start, lon_end, lat, lon, data_package, title_str, max_at_one):
    
     lat1 = em.find_closest_val(lat_start, lat)
     lat2 = em.find_closest_val(lat_end, lat)
@@ -89,17 +92,20 @@ def sst_anomaly_plot(lat_start, lat_end, lon_start, lon_end,lat, lon, data_packa
     ax.add_feature(cartopy.feature.BORDERS, linestyle=':')
 
 
-    ax.set_xticks(np.asarray(lon[::4]) - 180)
-    ax.set_yticks(np.asarray(lat[::3]))
+    ax.set_xticks(np.asarray(lon[::5]) - 180)
+    ax.set_yticks(np.asarray(lat[::4]))
     ax.set_xlabel('lon')
     ax.set_ylabel('lat')
-    mesh = plt.pcolormesh(lon[lon1:lon2], lat[lat1:lat2], data_package['sst'][lat1:lat2, lon1:lon2],
-                    cmap = 'coolwarm', vmin = -1, vmax = 1)
-
-    
+    if max_at_one: 
+        mesh = plt.pcolormesh(lon[lon1:lon2], lat[lat1:lat2], data_package['sst'][lat1:lat2, lon1:lon2],
+                        cmap = 'coolwarm', vmin = -1, vmax = 1)
+    else: 
+        mesh = plt.pcolormesh(lon[lon1:lon2], lat[lat1:lat2], data_package['sst'][lat1:lat2, lon1:lon2],
+                        cmap = 'coolwarm')  
     cb = plt.colorbar(mesh)
     # ax.clabel(cont, inline=1, fontsize=5, colors = 'black')
     cb.set_label('stdev from mean')
     
     ax.set_title(title_str)
     
+    return fig 

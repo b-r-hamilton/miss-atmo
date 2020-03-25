@@ -21,6 +21,7 @@ Atmospheric trends related to heavy flooding events in the Mississippi Basin (sa
 ## Notebooks
 - gph_wind_anomaly.ipynb: Jupyter Notebook that generates anomaly and mean maps for GPH and wind vectors 
 - sst_anomaly.ipynb: Jupyter Notebook that generates anomaly maps for SST around heavy flooding events 
+- ind_event.ipynb: Jupyter Notebook that generates anomaly and composite maps for single flood events 
 
 ## Python Dependencies
 - matplotlib 
