@@ -85,6 +85,28 @@ def get_data(directory, all_data, time_b):
 
     return data_package
 
+def gpcc_convert_datetime(lis):
+    new_list = []
+    for l in lis: 
+        origin = dt.datetime(1891, 1, 1, 0, 0, 0)
+        new_list.append(origin + dt.timedelta(hours = l))
+    return new_list
+
+def get_data_gpcc(directory, res):
+    if res == 1:
+        file = 'D:/GPCC/full_data_monthly_v2018_10.nc'
+    if res == 0.25:
+        file = 'full_data_monthly_v2018_025.nc'
+    x = Dataset(os.path.join(directory, file))
+    dictionary = dict()
+    dictionary['lat'] = x['lat'][:].data
+    dictionary['lon'] = x['lon'][:].data
+    dictionary['time'] = gpcc_convert_datetime(x['time'][:].data)
+    arr =  x['precip'][:].data
+    arr[arr < 0] = np.nan
+    dictionary['precip'] = arr
+    return dictionary
+    
 def normalize_data(var, time):
 
     mean_monthly = np.empty((12, var.shape[1], var.shape[2]))
@@ -112,3 +134,12 @@ def normalize_data(var, time):
         var[time.index(date), :, :] = normalized_frame
     
     return var
+
+#return all indices for a specific year for the list of filenames 
+def get_year_indices(datetimes, spec_year):
+    indices = []
+    for i in datetimes:
+        if i.year == spec_year:
+            indices.append(datetimes.index(i))
+    return indices 
+
