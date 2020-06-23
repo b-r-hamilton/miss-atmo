@@ -25,6 +25,7 @@ def convert_datetime(val, tus):
     if tus[0] == 'd': new = origin + dt.timedelta(days = val)
     return new 
 
+
 #acquire data between start and end data, return as dict 
 def get_data(directory, all_data, time_b):
   

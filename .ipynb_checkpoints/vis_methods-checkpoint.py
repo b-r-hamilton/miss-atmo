@@ -3,6 +3,7 @@ import cartopy
 import cartopy.crs as ccrs 
 import env_methods as em 
 import numpy as np 
+import geopandas as gpd
 
 def height_anomaly_plot(lat_start, lat_end, lon_start, lon_end,lat, lon, pres_levels, lev_x, data_package, title_str):
    
@@ -108,3 +109,23 @@ def sst_anomaly_plot(lat_start, lat_end, lon_start, lon_end, lat, lon, data_pack
     
     ax.set_title(title_str)
     
+    return fig 
+
+def plot_poi():
+    plt.figure()
+    ax = plt.subplot(projection = ccrs.PlateCarree())
+    ax.coastlines()
+    path1 = r'D:\Shapefiles\msrivs\msrivs.shp'
+    shp1 = gpd.read_file(path1)
+    shp1.plot(ax=ax, edgecolor='cornflowerblue', linewidth = 2)
+    plt.scatter(-91.438585, 38.708687, c = 'black')
+    plt.scatter(-85.741164, 38.262327, c = 'black')
+    plt.text(-94, 39.5, 'Hermann')
+    plt.text(-87, 39, 'Louisville')
+    gl = ax.gridlines(draw_labels = True)
+    gl.xlabels_top = False
+    gl.ylabels_right = False
+    ax.add_feature(cartopy.feature.OCEAN)
+    ax.add_feature(cartopy.feature.LAKES)
+    ax.add_feature(cartopy.feature.BORDERS)
+    plt.title('Locations of Flood Gauges')
