@@ -3,6 +3,7 @@
 Created on Wed Feb 26 10:25:25 2020
 Data from https://www.esrl.noaa.gov/psd/data/gridded/data.20thC_ReanV2c.pressure.html
 @author: bydd1
+Methods to analyze geospatial data
 """
 import os 
 from netCDF4 import Dataset

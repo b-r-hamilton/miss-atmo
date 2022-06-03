@@ -1,12 +1,18 @@
 
 # miss-atmo
-Atmospheric trends related to heavy flooding events in the Mississippi Basin (same purpose as miss-climate, I was just too nauseated at the prospect of sifting through that mess and decided to start from scratch)
+Atmospheric trends related to heavy flooding events in the Mississippi
 
 ## Data Dependencies
-- NOAA-CIRES 20th Century Reanalysis V2c (https://www.esrl.noaa.gov/psd/data/gridded/data.20thC_ReanV2c.html)
-	- uwnd
-	- vwnd
-	- gph 
+- NOAA-CIRES 20th Century Reanalysis V2c and V3 (https://www.esrl.noaa.gov/psd/data/gridded/data.20thC_ReanV2c.html)
+    - air 
+    - hgt
+    - prate
+    - pres
+    - runoff 
+    - snod
+    - soilw 
+    - uwnd 
+    - vwnd 
 - NOAA ERSST (https://www.esrl.noaa.gov/psd/data/gridded/data.noaa.ersst.v5.html)
     - sst 
 - USGS Gage Data for Hermann, Louisville, and Vicksburg 
@@ -19,10 +25,12 @@ Atmospheric trends related to heavy flooding events in the Mississippi Basin (sa
 ## Scripts
 
 ## Notebooks
-- gph_wind_anomaly.ipynb: Jupyter Notebook that generates anomaly and mean maps for GPH and wind vectors 
-- sst_anomaly.ipynb: Jupyter Notebook that generates anomaly maps for SST around heavy flooding events 
+- allvariable_analysis.ipynb: pulls reanalysis data prior to each flood for all variables, plots anomaly composites and exports to csv 
+- bootstrap.ipynb: completes a bootstrap analysis for significance of atmospheric patterns 
+- geo_corr.ipynb: computes Pearson correlation in env. variables to single specified point 
+- gph_wind_anomaly.ipynb: generates anomaly and mean maps for GPH and wind vectors 
 - ind_event.ipynb: Jupyter Notebook that generates anomaly and composite maps for single flood events 
-- geo_corr.ipynb: Jupyter Notebook that computes Pearson correlation in env. variables to single specified point 
+- sst_anomaly.ipynb: generates anomaly maps for SST around heavy flooding events 
 
 ## Python Dependencies
 - matplotlib 
